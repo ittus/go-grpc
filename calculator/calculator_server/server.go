@@ -14,7 +14,7 @@ import (
 type server struct{}
 
 func (*server) Sum(ctx context.Context, req *calculatorpb.SumRequest) (*calculatorpb.SumResponse, error) {
-	fmt.Printf("Greet function was invoked with %v", req)
+	fmt.Printf("Sum function was invoked with %v", req)
 	firstNumber := req.GetFirstNumber()
 	secondNumber := req.GetSecondNumber()
 
@@ -23,6 +23,24 @@ func (*server) Sum(ctx context.Context, req *calculatorpb.SumRequest) (*calculat
 		SumResult: result,
 	}
 	return res, nil
+}
+
+func (*server) PrimeNumber(req *calculatorpb.PrimeNumberRequest, stream calculatorpb.CalculatorService_PrimeNumberServer) error {
+	fmt.Printf("PrimeNumber function was invoked with %v", req)
+	number := req.GetNumber()
+	divisor := int64(2)
+	for number > 1 {
+		if number%divisor == 0 {
+			stream.Send((&calculatorpb.PrimeNumberResponse{
+				PrimeFactor: int64(divisor),
+			}))
+			number = number / divisor
+		} else {
+			divisor++
+			fmt.Println("Divisor has increased to %v", divisor)
+		}
+	}
+	return nil
 }
 
 func main() {

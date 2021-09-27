@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"io"
 	"log"
 
 	"github.com/ittus/grpc-go/calculator/calculatorpb"
@@ -21,6 +22,8 @@ func main() {
 	c := calculatorpb.NewCalculatorServiceClient(cc)
 	// fmt.Printf("Created client: %f", c)
 	doUnary(c)
+
+	doServerStreaming(c)
 }
 
 func doUnary(c calculatorpb.CalculatorServiceClient) {
@@ -34,4 +37,26 @@ func doUnary(c calculatorpb.CalculatorServiceClient) {
 		log.Fatalf("Error while calling Calculator GPC: %v", err)
 	}
 	log.Printf("Reponse from Calculator: %v", res.SumResult)
+}
+
+func doServerStreaming(c calculatorpb.CalculatorServiceClient) {
+	fmt.Println("Starting to do Streaming RPC...")
+	req := &calculatorpb.PrimeNumberRequest{
+		Number: 12,
+	}
+
+	stream, err := c.PrimeNumber(context.Background(), req)
+	if err != nil {
+		log.Fatalf("Error while calling Calculator GPC: %v", err)
+	}
+	for {
+		res, err := stream.Recv()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Fatalf("Something happened: %v", err)
+		}
+		fmt.Println(res.GetPrimeFactor())
+	}
 }
