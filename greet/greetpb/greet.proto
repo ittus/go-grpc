@@ -1,0 +1,6 @@
+syntax = "proto3";
+
+package greet;
+option go_package="github.com/ittus/grpc-go/greet/greetpb";
+
+service GreetService{}
