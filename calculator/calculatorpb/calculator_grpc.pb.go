@@ -22,6 +22,9 @@ type CalculatorServiceClient interface {
 	PrimeNumber(ctx context.Context, in *PrimeNumberRequest, opts ...grpc.CallOption) (CalculatorService_PrimeNumberClient, error)
 	ComputeAverage(ctx context.Context, opts ...grpc.CallOption) (CalculatorService_ComputeAverageClient, error)
 	FindMaximum(ctx context.Context, opts ...grpc.CallOption) (CalculatorService_FindMaximumClient, error)
+	// error handling
+	// this RPC will throw an exception if the sent number is negative
+	// The error being sent is of type INVALID_ARGUMENT
 	SquareRoot(ctx context.Context, in *SquareRootRequest, opts ...grpc.CallOption) (*SquareRootResponse, error)
 }
 
@@ -156,6 +159,9 @@ type CalculatorServiceServer interface {
 	PrimeNumber(*PrimeNumberRequest, CalculatorService_PrimeNumberServer) error
 	ComputeAverage(CalculatorService_ComputeAverageServer) error
 	FindMaximum(CalculatorService_FindMaximumServer) error
+	// error handling
+	// this RPC will throw an exception if the sent number is negative
+	// The error being sent is of type INVALID_ARGUMENT
 	SquareRoot(context.Context, *SquareRootRequest) (*SquareRootResponse, error)
 }
 
